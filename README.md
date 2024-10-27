@@ -1,5 +1,5 @@
 # Hydrometix
 
 ## Blynk 
+![Screenshot 2024-10-28 022047](https://github.com/user-attachments/assets/bbfaf11f-020d-4d11-bd2e-24a12b59f8fe)
 
-![gauge](https://github.com/user-attachments/assets/bbc8fbf1-3686-42c3-82f3-4e08c58b177f)
