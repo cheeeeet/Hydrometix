@@ -1,0 +1,144 @@
+#define BLYNK_TEMPLATE_ID "TMPL6_EXrpCHf"
+#define BLYNK_TEMPLATE_NAME "HydroMetrix"
+
+
+/* Comment this out to disable prints and save space */
+#define BLYNK_PRINT Serial
+
+
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
+
+#define TRIGGER_PIN 5    // Ultrasonic sensor trigger pin
+#define ECHO_PIN 18     // Ultrasonic sensor echo pin
+#define MAX_DISTANCE 35  // Maximum measurable distance (in cm)
+
+#define LED_BUILTIN 2
+
+// Water flow sensor pins
+#define SENSOR1_PIN 25
+#define SENSOR2_PIN 26 
+#define SENSOR3_PIN 27 
+
+#define calibrationFactor 4.5
+
+
+// Variables for each sensor
+long currentMillis = 0;
+long previousMillis1 = 0;
+long previousMillis2 = 0;
+long previousMillis3 = 0;
+int interval = 1000;
+volatile byte pulseCount1 = 0;
+volatile byte pulseCount2 = 0;
+volatile byte pulseCount3 = 0;
+byte pulse1Sec1 = 0;
+byte pulse1Sec2 = 0;
+byte pulse1Sec3 = 0;
+unsigned long totalMilliLiters1 = 0;
+unsigned long totalMilliLiters2 = 0;
+unsigned long totalMilliLiters3 = 0;
+
+// Your Blynk Auth Token
+char auth[] = "KsuwV0og2UD0ZvfOtev4GP8y9zkIqE4B";  // Replace with your actual Auth Token
+
+// Wi-Fi credentials
+char ssid[] = "cheeeeet";  // Replace with your Wi-Fi SSID
+char pass[] = "chetgwapo";  // Replace with your Wi-Fi password
+
+// Interrupt Service Routines for each sensor
+void IRAM_ATTR pulseCounter1() {
+  pulseCount1++;
+}
+
+void IRAM_ATTR pulseCounter2() {
+  pulseCount2++;
+}
+
+void IRAM_ATTR pulseCounter3() {
+  pulseCount3++;
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  // Initialize water flow sensor pins
+  pinMode(SENSOR1_PIN, INPUT_PULLUP);
+  pinMode(SENSOR2_PIN, INPUT_PULLUP);
+  pinMode(SENSOR3_PIN, INPUT_PULLUP);
+
+  // Attach interrupts for each sensor
+  attachInterrupt(digitalPinToInterrupt(SENSOR1_PIN), pulseCounter1, FALLING);
+  attachInterrupt(digitalPinToInterrupt(SENSOR2_PIN), pulseCounter2, FALLING);
+  attachInterrupt(digitalPinToInterrupt(SENSOR3_PIN), pulseCounter3, FALLING);
+
+  // Connect to Wi-Fi
+  WiFi.begin(ssid, pass);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("WiFi connected");
+
+  // Initialize Blynk
+  Blynk.config(auth);
+  Blynk.connect();
+  while (!Blynk.connected()) {
+    delay(500);
+    Serial.print("B");
+  }
+  Serial.println("Blynk connected");
+}
+
+void loop() {
+  Blynk.run(); 
+
+  // --- Ultrasonic sensor code ---
+  long duration = measureDistance();
+  int distance = duration / 29 / 2;
+  distance = min(distance, MAX_DISTANCE);
+  int waterLevelPercentage = map(distance, 0, MAX_DISTANCE, 100, 0);
+
+  // Send water level to Blynk Gauge (V0)
+  Blynk.virtualWrite(V0, waterLevelPercentage); 
+
+  // --- Water flow sensor code for each sensor ---
+  currentMillis = millis();
+
+  // Sensor 1 (Water Tank Intake)
+  if (currentMillis - previousMillis1 > interval) {
+    // ... (rest of the code for sensor 1 remains the same)
+    // Send water intake to Blynk Label (V1)
+    Blynk.virtualWrite(V1, totalMilliLiters1); 
+  }
+
+  // Sensor 2 (Apartment 1)
+  if (currentMillis - previousMillis2 > interval) {
+    // ... (rest of the code for sensor 2 remains the same)
+    // Send apartment 1 water usage to Blynk Label (V2)
+    Blynk.virtualWrite(V2, totalMilliLiters2); 
+  }
+
+  // Sensor 3 (Apartment 2)
+  if (currentMillis - previousMillis3 > interval) {
+    // ... (rest of the code for sensor 3 remains the same)
+    // Send apartment 2 water usage to Blynk Label (V3)
+    Blynk.virtualWrite(V3, totalMilliLiters3); 
+  }
+
+  delay(1000);  // Delay for 1 second
+}
+
+// Function to measure the distance
+long measureDistance() {
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER_PIN, LOW);
+  return pulseIn(ECHO_PIN, HIGH);
+}
