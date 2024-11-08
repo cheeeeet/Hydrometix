@@ -2,7 +2,6 @@
 #define BLYNK_TEMPLATE_NAME "HydroMetrix"
 
 
-/* Comment this out to disable prints and save space */
 #define BLYNK_PRINT Serial
 
 
@@ -40,12 +39,12 @@ unsigned long totalMilliLiters1 = 0;
 unsigned long totalMilliLiters2 = 0;
 unsigned long totalMilliLiters3 = 0;
 
-// Your Blynk Auth Token
+
 char auth[] = "KsuwV0og2UD0ZvfOtev4GP8y9zkIqE4B";  // Replace with your actual Auth Token
 
 // Wi-Fi credentials
-char ssid[] = "cheeeeet";  // Replace with your Wi-Fi SSID
-char pass[] = "chetgwapo";  // Replace with your Wi-Fi password
+char ssid[] = "cheeeeet";  // Replace with Wi-Fi SSID
+char pass[] = "chetgwapo";  // Replace with Wi-Fi password
 
 // Interrupt Service Routines for each sensor
 void IRAM_ATTR pulseCounter1() {
@@ -111,21 +110,39 @@ void loop() {
 
   // Sensor 1 (Water Tank Intake)
   if (currentMillis - previousMillis1 > interval) {
-    // ... (rest of the code for sensor 1 remains the same)
+    pulse1Sec1 = pulseCount1;
+    pulseCount1 = 0;
+    float flowRate = ((1000.0 / (millis() - previousMillis1)) * pulse1Sec1) / calibrationFactor;
+    unsigned int flowMilliLiters = (flowRate / 60) * 1000;
+    totalMilliLiters1 += flowMilliLiters;
+    previousMillis1 = millis();
+    
     // Send water intake to Blynk Label (V1)
     Blynk.virtualWrite(V1, totalMilliLiters1); 
   }
 
   // Sensor 2 (Apartment 1)
   if (currentMillis - previousMillis2 > interval) {
-    // ... (rest of the code for sensor 2 remains the same)
+    pulse1Sec2 = pulseCount2;
+    pulseCount2 = 0;
+    float flowRate = ((1000.0 / (millis() - previousMillis2)) * pulse1Sec2) / calibrationFactor;
+    unsigned int flowMilliLiters = (flowRate / 60) * 1000;
+    totalMilliLiters2 += flowMilliLiters;
+    previousMillis2 = millis();
+    
     // Send apartment 1 water usage to Blynk Label (V2)
     Blynk.virtualWrite(V2, totalMilliLiters2); 
   }
 
   // Sensor 3 (Apartment 2)
   if (currentMillis - previousMillis3 > interval) {
-    // ... (rest of the code for sensor 3 remains the same)
+    pulse1Sec3 = pulseCount3;
+    pulseCount3 = 0;
+    float flowRate = ((1000.0 / (millis() - previousMillis3)) * pulse1Sec3) / calibrationFactor;
+    unsigned int flowMilliLiters = (flowRate / 60) * 1000;
+    totalMilliLiters3 += flowMilliLiters;
+    previousMillis3 = millis();
+    
     // Send apartment 2 water usage to Blynk Label (V3)
     Blynk.virtualWrite(V3, totalMilliLiters3); 
   }
