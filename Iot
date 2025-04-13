@@ -1,4 +1,4 @@
-#define BLYNK_TEMPLATE_ID "TMPL6_EXrpCHf"
+#define BLYNK_TEMPLATE_ID "TMPL6swXtPjI8"
 #define BLYNK_TEMPLATE_NAME "HydroMetrix"
 
 
@@ -18,7 +18,7 @@
 // Water flow sensor pins
 #define SENSOR1_PIN 25
 #define SENSOR2_PIN 26 
-#define SENSOR3_PIN 27 
+#define SENSOR3_PIN 32 
 
 #define calibrationFactor 4.5
 
@@ -39,12 +39,12 @@ unsigned long totalMilliLiters1 = 0;
 unsigned long totalMilliLiters2 = 0;
 unsigned long totalMilliLiters3 = 0;
 
-
-char auth[] = "KsuwV0og2UD0ZvfOtev4GP8y9zkIqE4B";  // Replace with your actual Auth Token
+// Your Blynk Auth Token
+char auth[] = "k1uu4G_ol4lsgU3hEWVZtq_QVJaqsoN-";  // Replace with your actual Auth Token
 
 // Wi-Fi credentials
-char ssid[] = "cheeeeet";  // Replace with Wi-Fi SSID
-char pass[] = "chetgwapo";  // Replace with Wi-Fi password
+char ssid[] = "cheeeeet";  // Replace with your Wi-Fi SSID
+char pass[] = "12345678";  // Replace with your Wi-Fi password
 
 // Interrupt Service Routines for each sensor
 void IRAM_ATTR pulseCounter1() {
@@ -112,8 +112,8 @@ void loop() {
   if (currentMillis - previousMillis1 > interval) {
     pulse1Sec1 = pulseCount1;
     pulseCount1 = 0;
-    float flowRate = ((1000.0 / (millis() - previousMillis1)) * pulse1Sec1) / calibrationFactor;
-    unsigned int flowMilliLiters = (flowRate / 60) * 1000;
+    float flowRate = ((950.0 / (millis() - previousMillis1)) * pulse1Sec1) / calibrationFactor;
+    unsigned int flowMilliLiters = (flowRate / 60) * 950;
     totalMilliLiters1 += flowMilliLiters;
     previousMillis1 = millis();
     
@@ -125,8 +125,8 @@ void loop() {
   if (currentMillis - previousMillis2 > interval) {
     pulse1Sec2 = pulseCount2;
     pulseCount2 = 0;
-    float flowRate = ((1000.0 / (millis() - previousMillis2)) * pulse1Sec2) / calibrationFactor;
-    unsigned int flowMilliLiters = (flowRate / 60) * 1000;
+    float flowRate = ((950.0 / (millis() - previousMillis2)) * pulse1Sec2) / calibrationFactor;
+    unsigned int flowMilliLiters = (flowRate / 60) * 950;
     totalMilliLiters2 += flowMilliLiters;
     previousMillis2 = millis();
     
@@ -138,8 +138,8 @@ void loop() {
   if (currentMillis - previousMillis3 > interval) {
     pulse1Sec3 = pulseCount3;
     pulseCount3 = 0;
-    float flowRate = ((1000.0 / (millis() - previousMillis3)) * pulse1Sec3) / calibrationFactor;
-    unsigned int flowMilliLiters = (flowRate / 60) * 1000;
+    float flowRate = ((950.0 / (millis() - previousMillis3)) * pulse1Sec3) / calibrationFactor;
+    unsigned int flowMilliLiters = (flowRate / 60) * 950;
     totalMilliLiters3 += flowMilliLiters;
     previousMillis3 = millis();
     
