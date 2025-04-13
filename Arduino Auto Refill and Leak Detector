@@ -1,0 +1,42 @@
+#define LEAK_SENSOR A0    // First water sensor (Leak Detection)
+#define PUMP_SENSOR A1    // Second water sensor (Pump Automation)
+#define BUZZER_PIN 8      // Buzzer
+#define LED_PIN 8         // LED
+#define RELAY_PIN 6       // Relay controlling the pump
+#define LEAK_THRESHOLD 350 // Value is greater than 350, it means water is present, and the buzzer & LED turn ON.
+#define PUMP_THRESHOLD 350 // value is greater than 350, it means water is detected, so the relay turns OFF, stopping the pump. 
+
+void setup() {
+    pinMode(BUZZER_PIN, OUTPUT);
+    pinMode(LED_PIN, OUTPUT);
+    pinMode(RELAY_PIN, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int leakValue = analogRead(LEAK_SENSOR);  // Read Leak Sensor
+    int pumpValue = analogRead(PUMP_SENSOR);  // Read Pump Sensor
+
+    Serial.print("Leak Sensor: ");
+    Serial.print(leakValue);
+    Serial.print(" | Pump Sensor: ");
+    Serial.println(pumpValue);
+
+    // Leak Detection - If leak detected, turn on buzzer and LED
+    if (leakValue > LEAK_THRESHOLD) {
+        digitalWrite(BUZZER_PIN, HIGH);
+        digitalWrite(LED_PIN, HIGH);
+    } else {
+        digitalWrite(BUZZER_PIN, LOW);
+        digitalWrite(LED_PIN, LOW);
+    }
+
+    // Pump Automation - If NO water detected, turn ON pump
+    if (pumpValue < PUMP_THRESHOLD) { 
+        digitalWrite(RELAY_PIN, HIGH);  // Pump ON
+    } else {
+        digitalWrite(RELAY_PIN, LOW);   // Pump OFF
+    }
+
+    delay(500);
+}
